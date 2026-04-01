@@ -8,7 +8,7 @@ double best_energia = INFINITY; // Suma de energia en best_vec
 
 void FB(const std::vector<std::vector<double>>& energia, int i, int j, int n, int m, std::vector<int>& curr, int curr_energia) {
     // CASO BASE
-    if(i == n+1 && j >= 0 && j < m){
+    if(i == n && j >= 0 && j < m){
         if(curr_energia < best_energia){
             best_energia = curr_energia;
             best = curr;
@@ -16,15 +16,17 @@ void FB(const std::vector<std::vector<double>>& energia, int i, int j, int n, in
     }
     else if(j >= 0 && j < m){
         curr.push_back(j);
+        curr_energia += energia[i][j];
         
         // BAJO VERTICAL
-        FB(energia, i+1, j, n, m, curr, curr_energia + energia[i][j]);
+        FB(energia, i+1, j, n, m, curr, curr_energia);
         // BAJO A LA IZQ
-        FB(energia, i+1, j-1, n, m, curr, curr_energia + energia[i][j-1]);
+        FB(energia, i+1, j-1, n, m, curr, curr_energia);
         // BAJO A LA DER
-        FB(energia, i+1, j+1, n, m, curr, curr_energia + energia[i][j+1]);
+        FB(energia, i+1, j+1, n, m, curr, curr_energia);
         
         curr.pop_back();
+        curr_energia -= energia[i][j];
     }
 }
 
