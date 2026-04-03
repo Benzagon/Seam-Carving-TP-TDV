@@ -6,6 +6,12 @@ std::vector<int> best = {}; // La costura vertical de menor energia (el camino r
 // PREGUNTAR SI ESTA OK
 double best_energia = INFINITY; // Suma de energia en best_vec
 
+/*
+    1. Infinity
+    2. Mas de una Poda?
+    3. std:: sacar
+*/
+
 void FB(const std::vector<std::vector<double>>& energia, int i, int j, int n, int m, std::vector<int>& curr, double curr_energia) {
     // CASO BASE
     if(i == n && j >= 0 && j < m){
