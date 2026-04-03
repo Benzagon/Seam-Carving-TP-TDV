@@ -1,6 +1,5 @@
 #include "Backtracking.h"
 #include <cmath>
-#include <iostream>
 
 std::vector<int> best_bt = {}; // La costura vertical de menor energia (el camino rojo en columnas)
 
