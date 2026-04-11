@@ -3,15 +3,9 @@
 
 std::vector<int> best = {}; // La costura vertical de menor energia (el camino rojo en columnas)
 
-// PREGUNTAR SI ESTA OK
 double best_energia = INFINITY; // Suma de energia en best_vec
 
-/*
-    1. Infinity
-    2. Mas de una Poda?
-    3. std:: sacar
-*/
-
+// O(3^n)
 void FB(const std::vector<std::vector<double>>& energia, int i, int j, int n, int m, std::vector<int>& curr, double curr_energia) {
     // CASO BASE
     if(i == n && j >= 0 && j < m){
@@ -36,6 +30,8 @@ void FB(const std::vector<std::vector<double>>& energia, int i, int j, int n, in
     }
 }
 
+// O(3^n * m)
+// tita(n)
 std::vector<int> encontrarSeamFuerzaBruta(const std::vector<std::vector<double>>& energia) {
     int n = energia.size();
     int m = energia[0].size();
@@ -43,6 +39,7 @@ std::vector<int> encontrarSeamFuerzaBruta(const std::vector<std::vector<double>>
     std::vector<int> curr = {};
     double curr_energia = 0;
 
+    //O(m * 3^n)
     for(int i = 0; i < m; i++){
         FB(energia, 0, i, n, m, curr, curr_energia);
     }

@@ -3,7 +3,6 @@
 
 std::vector<int> best_bt = {}; // La costura vertical de menor energia (el camino rojo en columnas)
 
-// PREGUNTAR SI ESTA OK
 double best_energia_bt = INFINITY; // Suma de energia en best_vec
 
 void BT(const std::vector<std::vector<double>>& energia, int i, int j, int n, int m, std::vector<int>& curr, double curr_energia) {
@@ -31,6 +30,8 @@ void BT(const std::vector<std::vector<double>>& energia, int i, int j, int n, in
     }
 }
 
+// O(3^n * m)
+// tita(n)
 std::vector<int> encontrarSeamBacktracking(const std::vector<std::vector<double>>& energia) {
     int n = energia.size();
     int m = energia[0].size();

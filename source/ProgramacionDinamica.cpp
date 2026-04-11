@@ -46,6 +46,8 @@ std::pair<std::vector<int>, double> PD(const std::vector<std::vector<double>>& e
     return INVALIDO;
 }
 
+// O(n*m)
+// tita((n^2)*m)
 std::vector<int> encontrarSeamPD(const std::vector<std::vector<double>>& energia) {
     int n = energia.size();
     int m = energia[0].size();
