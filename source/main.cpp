@@ -9,6 +9,8 @@
 #include "Backtracking.h"
 #include "ProgramacionDinamica.h"
 
+#include <chrono> // Librería principal
+
 // Lee una matriz de energía desde un archivo de texto.
 // Formato esperado:
 //   filas columnas
@@ -93,6 +95,50 @@ void modoImagen(const std::string& rutaImagen, const std::string& algoritmo, int
     std::cout << "Imagen guardada en " << rutaSalida << "\n";
 }
 
+void modoTest(const std::string& rutaImagen, int iteraciones) {
+    // Imagen img(rutaImagen);
+    // int anchoOriginal = img.ancho();
+    // int altoOriginal  = img.alto();
+    // std::cout << "Imagen cargada: " << anchoOriginal << "x" << altoOriginal << " px\n";
+    std::vector<std::vector<double>> energia = leerMatrizEnergia(rutaImagen);
+
+    // Abrir en modo append; escribir header solo si el archivo no existía
+    std::string rutaCSV = "output/resultados_test.csv";
+    bool archivoExiste = std::ifstream(rutaCSV).good();
+    std::ofstream csv(rutaCSV, std::ios::app);
+    if (!archivoExiste)
+        csv << "algoritmo,iteracion,tiempo_ms,ancho_original,alto_original\n";
+
+    const std::vector<std::string> algoritmos = {"pd", "fb", "bt"};
+
+    for (const std::string& algoritmo : algoritmos) {
+        std::cout << "\n--- Algoritmo: " << algoritmo << " ---\n";
+
+        // Imagen imgClon = img;
+
+        for (int i = 0; i < iteraciones; i++) {
+            auto inicio = std::chrono::high_resolution_clock::now();
+            std::vector<int> seam = ejecutarAlgoritmo(energia, algoritmo);
+            auto fin = std::chrono::high_resolution_clock::now();
+
+            std::chrono::duration<double, std::milli> duracion = fin - inicio;
+            double tiempoIter = duracion.count();
+
+            std::cout << "  [" << algoritmo << "] Iteración " << (i + 1)
+                      << " - Tiempo: " << tiempoIter << " ms\n";
+
+            csv << algoritmo << ","
+                << (i + 1) << ","
+                << tiempoIter << ","
+                << energia.size() << ","
+                << energia[0].size() << "\n";
+        }
+    }
+
+    csv.close();
+    std::cout << "\nResultados guardados en " << rutaCSV << "\n";
+}
+
 void imprimirUso() {
     std::cout << "Uso:\n"
               << "  Modo numérico: ./seam --numerico <archivo> --algoritmo <fb|bt|pd>\n"
@@ -119,6 +165,9 @@ int main(int argc, char* argv[]) {
         } else if (arg == "--imagen" && i + 1 < argc) {
             modo = "imagen";
             rutaArchivo = argv[++i];
+        } else if (arg == "--test" && i + 1 < argc) {
+            modo = "test";
+            rutaArchivo = argv[++i];
         } else if (arg == "--algoritmo" && i + 1 < argc) {
             algoritmo = argv[++i];
         } else if (arg == "--iteraciones" && i + 1 < argc) {
@@ -134,7 +183,10 @@ int main(int argc, char* argv[]) {
             modoNumerico(rutaArchivo, algoritmo);
         } else if (modo == "imagen") {
             modoImagen(rutaArchivo, algoritmo, iteraciones);
-        } else {
+        } else if (modo == "test") {
+            modoTest(rutaArchivo, iteraciones);
+        } 
+        else {
             imprimirUso();
             return 1;
         }
