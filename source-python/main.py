@@ -94,11 +94,50 @@ def imprimir_uso() -> None:
         "Uso:\n"
         "  Modo numérico: python main.py --numerico <archivo> --algoritmo <fb|bt|pd>\n"
         "  Modo imagen:   python main.py --imagen <archivo> --algoritmo <fb|bt|pd> --iteraciones <N>\n"
+        "  Modo test:     python main.py --test <archivo> --iteraciones <N>\n"
         "\nEjemplos:\n"
         "  python main.py --numerico input/ejemplo.txt --algoritmo pd\n"
         "  python main.py --imagen img/foto.jpg --algoritmo pd --iteraciones 50\n"
+        "  python main.py --test img/foto.jpg --iteraciones 10\n"
     )
 
+import time
+import os
+import copy
+
+def modo_test(ruta_imagen: str, algoritmo: str, iteraciones: int) -> None:
+    img = Imagen(ruta_imagen)
+    ancho_original = img.ancho()
+    alto_original  = img.alto()
+    print(f"Imagen cargada: {ancho_original}x{alto_original} px")
+
+    ruta_csv = "../output/resultados_test.csv"
+    os.makedirs(os.path.dirname(ruta_csv), exist_ok=True)
+    archivo_existe = os.path.isfile(ruta_csv)
+
+    algoritmos = ["pd", "fb", "bt"] if algoritmo == "todos" else [algoritmo]
+
+    with open(ruta_csv, "a", newline="") as csv:
+        if not archivo_existe:
+            csv.write("algoritmo,iteracion,tiempo_ms,ancho_original,alto_original,lenguaje\n")
+
+        for algo in algoritmos:
+            print(f"\n--- Algoritmo: {algo} ---")
+
+            img_clon = copy.deepcopy(img)
+
+            for i in range(iteraciones):
+                inicio = time.perf_counter()
+                seam = ejecutar_algoritmo(img_clon.obtener_matriz_energia(), algo)
+                fin = time.perf_counter()
+
+                tiempo_iter = (fin - inicio) * 1000
+
+                print(f"  [{algo}] Iteración {i + 1} - Tiempo: {tiempo_iter:.4f} ms")
+
+                csv.write(f"{algo},{i + 1},{tiempo_iter},{ancho_original},{ancho_original},python\n")
+
+    print(f"\nResultados guardados en {ruta_csv}")
 
 def main() -> int:
     args = sys.argv[1:]
@@ -123,6 +162,10 @@ def main() -> int:
             modo = "imagen"
             i += 1
             ruta_archivo = args[i]
+        elif arg == "--test" and i + 1 < len(args):
+            modo = "test"
+            i += 1
+            ruta_archivo = args[i]
         elif arg == "--algoritmo" and i + 1 < len(args):
             i += 1
             algoritmo = args[i]
@@ -139,6 +182,8 @@ def main() -> int:
             modo_numerico(ruta_archivo, algoritmo)
         elif modo == "imagen":
             modo_imagen(ruta_archivo, algoritmo, iteraciones)
+        elif modo == "test":
+            modo_test(ruta_archivo, algoritmo, iteraciones)
         else:
             imprimir_uso()
             return 1

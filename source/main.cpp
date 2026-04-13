@@ -95,43 +95,49 @@ void modoImagen(const std::string& rutaImagen, const std::string& algoritmo, int
     std::cout << "Imagen guardada en " << rutaSalida << "\n";
 }
 
-void modoTest(const std::string& rutaImagen, int iteraciones) {
-    // Imagen img(rutaImagen);
-    // int anchoOriginal = img.ancho();
-    // int altoOriginal  = img.alto();
-    // std::cout << "Imagen cargada: " << anchoOriginal << "x" << altoOriginal << " px\n";
-    std::vector<std::vector<double>> energia = leerMatrizEnergia(rutaImagen);
+void modoTest(const std::string& rutaImagen, std::string& algoritmo, int iteraciones) {
+    Imagen img(rutaImagen);
+    int anchoOriginal = img.ancho();
+    int altoOriginal  = img.alto();
+    std::cout << "Imagen cargada: " << anchoOriginal << "x" << altoOriginal << " px\n";
 
     // Abrir en modo append; escribir header solo si el archivo no existía
     std::string rutaCSV = "output/resultados_test.csv";
     bool archivoExiste = std::ifstream(rutaCSV).good();
     std::ofstream csv(rutaCSV, std::ios::app);
     if (!archivoExiste)
-        csv << "algoritmo,iteracion,tiempo_ms,ancho_original,alto_original\n";
+        csv << "algoritmo,iteracion,tiempo_ms,ancho_original,alto_original,lenguaje\n";
 
-    const std::vector<std::string> algoritmos = {"pd", "fb", "bt"};
+    std::vector<std::string> algoritmos = {};
+    if (algoritmo == "todos"){
+        algoritmos = {"pd", "fb", "bt"};
+    }
+    else {
+        algoritmos = {algoritmo};
+    }
 
-    for (const std::string& algoritmo : algoritmos) {
-        std::cout << "\n--- Algoritmo: " << algoritmo << " ---\n";
+    for (const std::string& algo : algoritmos) {
+        std::cout << "\n--- Algoritmo: " << algo << " ---\n";
 
-        // Imagen imgClon = img;
+        Imagen imgClon = img;
 
         for (int i = 0; i < iteraciones; i++) {
             auto inicio = std::chrono::high_resolution_clock::now();
-            std::vector<int> seam = ejecutarAlgoritmo(energia, algoritmo);
+            std::vector<int> seam = ejecutarAlgoritmo(imgClon.obtenerMatrizEnergia(), algo);
             auto fin = std::chrono::high_resolution_clock::now();
 
             std::chrono::duration<double, std::milli> duracion = fin - inicio;
             double tiempoIter = duracion.count();
 
-            std::cout << "  [" << algoritmo << "] Iteración " << (i + 1)
+            std::cout << "  [" << algo << "] Iteración " << (i + 1)
                       << " - Tiempo: " << tiempoIter << " ms\n";
 
-            csv << algoritmo << ","
+            csv << algo << ","
                 << (i + 1) << ","
                 << tiempoIter << ","
-                << energia.size() << ","
-                << energia[0].size() << "\n";
+                << anchoOriginal << ","
+                << anchoOriginal << ","
+                << "cpp" << "\n";
         }
     }
 
@@ -184,7 +190,7 @@ int main(int argc, char* argv[]) {
         } else if (modo == "imagen") {
             modoImagen(rutaArchivo, algoritmo, iteraciones);
         } else if (modo == "test") {
-            modoTest(rutaArchivo, iteraciones);
+            modoTest(rutaArchivo, algoritmo, iteraciones);
         } 
         else {
             imprimirUso();
