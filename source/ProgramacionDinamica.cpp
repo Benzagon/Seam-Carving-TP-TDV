@@ -45,8 +45,20 @@ std::pair<int, double> PD(const std::vector<std::vector<double>>& energia, int i
     return INVALIDO;
 }
 
+// Funcion para reconstruir la solucion en el memo
+std::vector<int> reconstruir(std::vector<std::vector<std::pair<int, double>>> & memo, int best, int n){
+    std::vector<int> res = {};
+    res.push_back(best);
+    int prev = best;
+    for(int i = 0; i < n-1; i++){
+        res.push_back(memo[i][prev].first);
+        prev = memo[i][prev].first;
+    }
+    return res;
+}
+
 // O(n*m)
-// tita((n^2)*m)
+// tita(n*m)
 std::vector<int> encontrarSeamPD(const std::vector<std::vector<double>>& energia) {
     int n = energia.size();
     int m = energia[0].size();
@@ -74,14 +86,5 @@ std::vector<int> encontrarSeamPD(const std::vector<std::vector<double>>& energia
         }
     }
 
-    // reconstuir
-    std::vector<int> res = {};
-    res.push_back(best);
-    int prev = best;
-    for(int i = 0; i < n-1; i++){
-        res.push_back(memo[i][prev].first);
-        prev = memo[i][prev].first;
-    }
-
-    return res;
+    return reconstruir(memo, best, n);
 }
