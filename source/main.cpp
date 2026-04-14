@@ -137,7 +137,7 @@ void modoTest(const std::string& rutaImagen, std::string& algoritmo, int iteraci
                 << tiempoIter << ","
                 << anchoOriginal << ","
                 << anchoOriginal << ","
-                << "cpp" << "\n";
+                << "c++" << "\n";
         }
     }
 
