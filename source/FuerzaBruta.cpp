@@ -5,7 +5,7 @@
 void FB(const std::vector<std::vector<double>>& energia, int i, int j, int n, int m, std::vector<int>& curr, double curr_energia, std::vector<int>& best, double* best_energia) {
     // CASO BASE
     if(i == n && j >= 0 && j < m){
-        if(curr_energia < *best_energia){
+        if(curr_energia < *best_energia){ // Encontré un camino mejor
             *best_energia = curr_energia;
             best = curr;
         }
@@ -14,12 +14,9 @@ void FB(const std::vector<std::vector<double>>& energia, int i, int j, int n, in
         curr.push_back(j);
         curr_energia += energia[i][j];
         
-        // BAJO VERTICAL
-        FB(energia, i+1, j, n, m, curr, curr_energia, best, best_energia);
-        // BAJO A LA IZQ
-        FB(energia, i+1, j-1, n, m, curr, curr_energia, best, best_energia);
-        // BAJO A LA DER
-        FB(energia, i+1, j+1, n, m, curr, curr_energia, best, best_energia);
+        FB(energia, i+1, j, n, m, curr, curr_energia, best, best_energia);   // BAJO VERTICAL
+        FB(energia, i+1, j-1, n, m, curr, curr_energia, best, best_energia); // BAJO A LA IZQ
+        FB(energia, i+1, j+1, n, m, curr, curr_energia, best, best_energia); // BAJO A LA DER
         
         curr.pop_back();
         curr_energia -= energia[i][j];
@@ -27,7 +24,6 @@ void FB(const std::vector<std::vector<double>>& energia, int i, int j, int n, in
 }
 
 // O(3^n * m)
-// tita(n)
 std::vector<int> encontrarSeamFuerzaBruta(const std::vector<std::vector<double>>& energia) {
     int n = energia.size();
     int m = energia[0].size();
@@ -35,8 +31,8 @@ std::vector<int> encontrarSeamFuerzaBruta(const std::vector<std::vector<double>>
     std::vector<int> curr = {};
     double curr_energia = 0;
 
-    std::vector<int> best = {}; // La costura vertical de menor energia (el camino rojo en columnas)
-    double best_energia = INFINITY; // Suma de energia en best_vec
+    std::vector<int> best = {}; // La costura vertical de menor energia
+    double best_energia = INFINITY; // Suma de energia del mejor camino
 
     //O(m * 3^n)
     for(int i = 0; i < m; i++){

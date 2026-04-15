@@ -1,6 +1,7 @@
 #include "Backtracking.h"
 #include <cmath>
 
+// O(3^n)
 void BT(const std::vector<std::vector<double>>& energia, int i, int j, int n, int m, std::vector<int>& curr, double curr_energia, std::vector<int>& best, double* best_energia) {
     // CASO BASE
     if(i == n && j >= 0 && j < m){
@@ -9,17 +10,14 @@ void BT(const std::vector<std::vector<double>>& energia, int i, int j, int n, in
             best = curr;
         }
     }
-    // PODA: cuando agregar este nodo ya tiene mayor energia que el mejor carving
+    // PODA: cuando agregar este nodo ya tiene mayor energia que el mejor carving, no miro la rama
     else if((j >= 0 && j < m) && *best_energia >= curr_energia + energia[i][j]){
         curr.push_back(j);
         curr_energia += energia[i][j];
         
-        // BAJO VERTICAL
-        BT(energia, i+1, j, n, m, curr, curr_energia, best, best_energia);
-        // BAJO A LA IZQ
-        BT(energia, i+1, j-1, n, m, curr, curr_energia, best, best_energia);
-        // BAJO A LA DER
-        BT(energia, i+1, j+1, n, m, curr, curr_energia, best, best_energia);
+        BT(energia, i+1, j, n, m, curr, curr_energia, best, best_energia);   // BAJO VERTICAL
+        BT(energia, i+1, j-1, n, m, curr, curr_energia, best, best_energia); // BAJO A LA IZQ
+        BT(energia, i+1, j+1, n, m, curr, curr_energia, best, best_energia); // BAJO A LA DER
         
         curr.pop_back();
         curr_energia -= energia[i][j];
@@ -27,7 +25,6 @@ void BT(const std::vector<std::vector<double>>& energia, int i, int j, int n, in
 }
 
 // O(3^n * m)
-// tita(n)
 std::vector<int> encontrarSeamBacktracking(const std::vector<std::vector<double>>& energia) {
     int n = energia.size();
     int m = energia[0].size();
@@ -35,7 +32,7 @@ std::vector<int> encontrarSeamBacktracking(const std::vector<std::vector<double>
     std::vector<int> curr = {};
     double curr_energia = 0;
 
-    std::vector<int> best = {}; // La costura vertical de menor energia (el camino rojo en columnas)
+    std::vector<int> best = {}; // La costura vertical de menor energia
     double best_energia = INFINITY; // Suma de energia en best_vec
 
     for(int i = 0; i < m; i++){
